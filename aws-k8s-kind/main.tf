@@ -3,12 +3,12 @@ provider "aws" {
   region = "${var.aws_region}"
 }
 
-data "aws_vpc" "default" {
+data "aws_vpc" "main" {
   id = "${var.vpc_id}"
 }
 
-data "aws_subnet_ids" "default" {
-  vpc_id = "${data.aws_vpc.default.id}"
+data "aws_subnet_ids" "main" {
+  vpc_id = "${data.aws_vpc.main.id}"
 }
 
 data "aws_ami" "ubuntu" {
@@ -30,25 +30,34 @@ data "aws_ami" "ubuntu" {
 resource "aws_security_group" "allow_ssh" {
   name        = "allow_ssh"
   description = "Allow SSH inbound traffic"
-  vpc_id      = "${aws_vpc.main.id}"
+  vpc_id      = "${data.aws_vpc.main.id}"
 
   ingress {
     from_port   = 22
     to_port     = 22
-    protocol    = "-1"
+    protocol    = "tcp"
     # Please restrict your ingress to only necessary IPs and ports.
     # Opening to 0.0.0.0/0 can lead to security vulnerabilities.
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  egress {
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    cidr_blocks     = ["0.0.0.0/0"]
+  }
 }
 
-resource "aws_spot_instance_request" "kind_vm" {
+resource "aws_spot_instance_request" "kind_ec2" {
   ami = "${data.aws_ami.ubuntu.id}"
   instance_type = "t3.2xlarge"
   iam_instance_profile = "${aws_iam_instance_profile.test_profile.name}"
 
   key_name = "${var.ec2_keyname}"
   security_groups = ["${aws_security_group.allow_ssh.name}"]
+
+  user_data = "${file("scripts/user_data.sh")}"
 
   root_block_device {
     volume_size = "100"
@@ -65,7 +74,7 @@ data "aws_iam_policy_document" "assume_role" {
       "ec2:*",
       "elasticloadbalancing:*",
       "autoscaling:*",
-      "arn:aws:s3:::*"
+      "s3:*"
     ]
     effect = "Allow"
     resources = [
