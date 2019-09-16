@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Tested on Ubuntu 18.04
 
 #
@@ -45,8 +47,8 @@ sudo usermod -a -G docker ubuntu
 # kind
 #
 sudo -H -u ubuntu bash -c 'GO111MODULE="on" go get sigs.k8s.io/kind@v0.5.1'
-sudo -H -u ubuntu bash -c 'echo "export GOPATH=\$HOME/go" >> .bashrc'
-sudo -H -u ubuntu bash -c 'echo "export PATH=\$PATH:\$GOPATH/bin" >> .bashrc'
+sudo -H -u ubuntu bash -c 'echo "export GOPATH=\$HOME/go" >> /home/ubuntu/.bashrc'
+sudo -H -u ubuntu bash -c 'echo "export PATH=\$PATH:\$GOPATH/bin" >> /home/ubuntu/.bashrc'
 
 #
 # kubectl
@@ -59,4 +61,4 @@ sudo mv ./kubectl /usr/local/bin/kubectl
 #
 # .bash_aliases
 #
-sudo -H -u ubuntu bash -c 'echo -n "alias k=kubectl" > .bash_aliases'
+sudo -H -u ubuntu bash -c 'echo -n "alias k=kubectl" > /home/ubuntu/.bash_aliases'
