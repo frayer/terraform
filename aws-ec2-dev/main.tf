@@ -49,9 +49,9 @@ resource "aws_security_group" "allow_ssh" {
   }
 }
 
-resource "aws_spot_instance_request" "kind_ec2" {
+resource "aws_spot_instance_request" "dev_instance" {
   ami = "${data.aws_ami.ubuntu.id}"
-  instance_type = "t3.2xlarge"
+  instance_type = "${var.instance_type}"
   iam_instance_profile = "${aws_iam_instance_profile.test_profile.name}"
 
   key_name = "${var.ec2_keyname}"
@@ -79,7 +79,7 @@ data "aws_iam_policy_document" "assume_role" {
 }
 
 resource "aws_iam_policy" "assume_role" {
-  provider = "aws"
+  provider = aws
   name     = "assume_role"
   policy   = "${data.aws_iam_policy_document.assume_role.json}"
 }
@@ -104,7 +104,7 @@ EOF
 }
 
 resource "aws_iam_role_policy_attachment" "assume_role" {
-  provider = "aws"
+  provider = aws
   role = "${aws_iam_role.assume_role.name}"
   policy_arn = "${aws_iam_policy.assume_role.arn}"
 }

@@ -6,12 +6,18 @@
 # Upgrade existing packages
 #
 apt update
-DEBIAN_FRONTEND=noninteractive apt upgrade -y
+export DEBIAN_FRONTEND=noninteractive
+apt upgrade -y
 
 #
 # gcc
 #
 apt-get install -y build-essential
+
+#
+# tools
+#
+apt install vim curl git tmux jq zsh -y
 
 #
 # golang
@@ -24,7 +30,7 @@ apt-get install -y golang-go
 # docker
 # https://docs.docker.com/install/linux/docker-ce/ubuntu/
 #
-apt-get install docker.io
+apt-get install docker.io -y
 usermod -a -G docker ubuntu
 
 #
